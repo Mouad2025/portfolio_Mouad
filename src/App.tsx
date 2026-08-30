@@ -17,7 +17,6 @@ import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
 import { ProjectModal } from './components/ProjectModal';
 import { ResumeModal } from './components/ResumeModal';
-import { EditProfileModal } from './components/EditProfileModal';
 
 function AppContent() {
   const { language, isRTL } = useLanguage();
@@ -40,26 +39,8 @@ function AppContent() {
     return getLocalizedPortfolioData(language);
   }, [language]);
 
-  const [customProfile, setCustomProfile] = useState<ProfileData | null>(() => {
-    try {
-      const saved = localStorage.getItem('user_portfolio_profile');
-      if (saved) {
-        return JSON.parse(saved);
-      }
-    } catch (e) {
-      console.warn('Failed to load profile from localStorage', e);
-    }
-    return null;
-  });
-
-  // If user edited profile locally in modal, use that, otherwise use localized profile
-  const activeProfile = useMemo(() => {
-    return customProfile || localizedData.profile;
-  }, [customProfile, localizedData.profile]);
-
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
   const [resumeModalOpen, setResumeModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
 
   // Synchronize document theme class
   useEffect(() => {
@@ -80,8 +61,8 @@ function AppContent() {
 
   // Synchronize document title with engineer's name
   useEffect(() => {
-    document.title = `${activeProfile.name} — ${activeProfile.title}`;
-  }, [activeProfile.name, activeProfile.title]);
+    document.title = `${initialProfile.name} — ${initialProfile.title}`;
+  }, []);
 
   const toggleTheme = () => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
@@ -89,31 +70,13 @@ function AppContent() {
 
   const handleDownloadResume = () => {
     generatePdfResume({
-      profile: activeProfile,
+      profile: initialProfile,
       projects: localizedData.projects,
       skills: localizedData.skills,
       experience: localizedData.experience,
       education: localizedData.education,
       certifications: localizedData.certifications
     });
-  };
-
-  const handleSaveProfile = (updated: ProfileData) => {
-    setCustomProfile(updated);
-    try {
-      localStorage.setItem('user_portfolio_profile', JSON.stringify(updated));
-    } catch (e) {
-      console.warn('Failed to save profile to localStorage', e);
-    }
-  };
-
-  const handleResetProfile = () => {
-    setCustomProfile(null);
-    try {
-      localStorage.removeItem('user_portfolio_profile');
-    } catch (e) {
-      console.warn('Failed to clear profile in localStorage', e);
-    }
   };
 
   return (
@@ -125,11 +88,10 @@ function AppContent() {
       
       {/* Fixed Navigation with Dark/Light mode toggle and Language Switcher */}
       <Navbar
-        profile={activeProfile}
+        profile={initialProfile}
         theme={theme}
         onToggleTheme={toggleTheme}
         onOpenResumeModal={() => setResumeModalOpen(true)}
-        onOpenEditModal={() => setEditModalOpen(true)}
         onDownloadResume={handleDownloadResume}
       />
 
@@ -137,7 +99,7 @@ function AppContent() {
       <main className="flex-1">
         {/* Hero Section */}
         <Hero
-          profile={activeProfile}
+          profile={initialProfile}
           theme={theme}
           onDownloadResume={handleDownloadResume}
           onOpenResumeModal={() => setResumeModalOpen(true)}
@@ -145,7 +107,7 @@ function AppContent() {
 
         {/* Biography & Experience Section */}
         <About
-          profile={activeProfile}
+          profile={initialProfile}
           theme={theme}
           experience={localizedData.experience}
           education={localizedData.education}
@@ -180,7 +142,7 @@ function AppContent() {
 
         {/* Dedicated PDF Resume Download Section */}
         <ResumeSection
-          profile={activeProfile}
+          profile={initialProfile}
           theme={theme}
           projects={localizedData.projects}
           skills={localizedData.skills}
@@ -193,14 +155,14 @@ function AppContent() {
 
         {/* Contact Form & Professional Coordinates */}
         <Contact 
-          profile={activeProfile} 
+          profile={initialProfile} 
           theme={theme}
         />
       </main>
 
       {/* Footer */}
       <Footer
-        profile={activeProfile}
+        profile={initialProfile}
         theme={theme}
         onOpenResumeModal={() => setResumeModalOpen(true)}
       />
@@ -216,22 +178,13 @@ function AppContent() {
         isOpen={resumeModalOpen}
         theme={theme}
         onClose={() => setResumeModalOpen(false)}
-        profile={activeProfile}
+        profile={initialProfile}
         projects={localizedData.projects}
         skills={localizedData.skills}
         experience={localizedData.experience}
         education={localizedData.education}
         certifications={localizedData.certifications}
         onDownloadPdf={handleDownloadResume}
-      />
-
-      <EditProfileModal
-        isOpen={editModalOpen}
-        theme={theme}
-        onClose={() => setEditModalOpen(false)}
-        profile={activeProfile}
-        onSave={handleSaveProfile}
-        onReset={handleResetProfile}
       />
 
     </div>

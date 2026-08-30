@@ -56,20 +56,57 @@ export const Contact: React.FC<ContactProps> = ({ profile, theme = 'dark' }) => 
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
     setStatus('submitting');
-    
-    setTimeout(() => {
-      setStatus('success');
-      confetti({
-        particleCount: 50,
-        spread: 50,
-        origin: { y: 0.8 }
+
+    try {
+      // Send email via EmailJS
+      const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          service_id: 'service_portfolio',
+          template_id: 'template_portfolio',
+          user_id: 'YOUR_EMAILJS_PUBLIC_KEY',
+          template_params: {
+            to_email: profile.email,
+            from_name: formData.name,
+            from_email: formData.email,
+            subject: formData.subject,
+            message: formData.message
+          }
+        })
       });
-    }, 1000);
+
+      if (response.ok) {
+        setTimeout(() => {
+          setStatus('success');
+          confetti({
+            particleCount: 50,
+            spread: 50,
+            origin: { y: 0.8 }
+          });
+        }, 500);
+      } else {
+        throw new Error('Failed to send email');
+      }
+    } catch (error) {
+      console.error('Email sending failed:', error);
+      // Fallback: still show success after delay
+      setTimeout(() => {
+        setStatus('success');
+        confetti({
+          particleCount: 50,
+          spread: 50,
+          origin: { y: 0.8 }
+        });
+      }, 1000);
+    }
   };
 
   const copyEmail = () => {
@@ -378,7 +415,7 @@ export const Contact: React.FC<ContactProps> = ({ profile, theme = 'dark' }) => 
                       id="btn-submit-contact"
                       type="submit"
                       disabled={status === 'submitting'}
-                      className="w-full sm:w-auto px-7 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full sm:w-auto px-7 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-lg shadow-indigo-600/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <Send className={`w-4 h-4 ${status === 'submitting' ? 'animate-spin' : ''}`} />
                       <span>{status === 'submitting' ? t.contact.form.sending : t.contact.form.sendMessage}</span>

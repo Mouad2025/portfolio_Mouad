@@ -7,7 +7,6 @@ import {
   Github, 
   Linkedin, 
   Mail, 
-  SlidersHorizontal,
   ArrowUpRight,
   Sun,
   Moon
@@ -21,7 +20,6 @@ interface NavbarProps {
   theme?: 'dark' | 'light';
   onToggleTheme?: () => void;
   onOpenResumeModal: () => void;
-  onOpenEditModal: () => void;
   onDownloadResume: () => void;
 }
 
@@ -29,8 +27,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   profile,
   theme = 'dark',
   onToggleTheme,
-  onOpenResumeModal,
-  onOpenEditModal
+  onOpenResumeModal
 }) => {
   const { t, isRTL } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
@@ -78,7 +75,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   ];
 
   const githubLink = profile.socials.find(s => s.icon === 'github')?.url || 'https://github.com/Mouad2025';
-  const linkedinLink = profile.socials.find(s => s.icon === 'linkedin')?.url || 'https://www.linkedin.com/in/bouhadiba-mou%C3%A2d-6914052a6?utm_source=share_via&utm_content=profile&utm_medium=member_android';
+  const linkedinLink = profile.socials.find(s => s.icon === 'linkedin')?.url || 'https://www.linkedin.com/in/bouhadiba-mou%C3%A2d-6914052a6?utm_source=share_via&utm_content=profile&utm_medium=member_profile';
 
   return (
     <header 
@@ -208,21 +205,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Linkedin className="w-4 h-4" />
             </a>
 
-            {/* Customize Live Portfolio Button */}
-            <button
-              id="btn-customize-portfolio"
-              onClick={onOpenEditModal}
-              className={`px-2.5 py-1.5 text-xs font-medium rounded-xl border transition-colors hidden xl:flex items-center gap-1.5 cursor-pointer ${
-                isLight
-                  ? 'text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 border-slate-200'
-                  : 'text-slate-300 hover:text-white bg-slate-900 border-slate-800 hover:border-slate-700'
-              }`}
-              title={t.nav.editProfile}
-            >
-              <SlidersHorizontal className="w-3.5 h-3.5 text-indigo-500" />
-              <span>{t.nav.editProfile}</span>
-            </button>
-
             {/* View / Download PDF Resume button */}
             <button
               id="header-btn-resume"
@@ -241,7 +223,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <a
               id="header-btn-contact"
               href="#contact"
-              className="px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 rounded-xl transition-all shadow-md shadow-indigo-600/20 flex items-center gap-1.5"
+              className="px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 rounded-xl transition-all shadow-md shadow-indigo-600/20 flex items-center gap-1.5 cursor-pointer"
             >
               <Send className="w-3.5 h-3.5" />
               <span>{t.nav.contact}</span>
@@ -341,7 +323,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <a
               href="#contact"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full py-2.5 px-4 text-center rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-md shadow-indigo-600/30"
+              className="w-full py-2.5 px-4 text-center rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20"
             >
               <Send className="w-4 h-4" />
               <span>{t.nav.getInTouch}</span>
