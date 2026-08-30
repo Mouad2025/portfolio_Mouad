@@ -71,8 +71,8 @@ export const Contact: React.FC<ContactProps> = ({ profile, theme = 'dark' }) => 
         },
         body: JSON.stringify({
           service_id: 'service_portfolio',
-          template_id: 'template_portfolio',
-          user_id: 'YOUR_EMAILJS_PUBLIC_KEY',
+          template_id: 'template_49l8b04',
+          user_id: 'XGC7RkR48l0QCAueO',
           template_params: {
             to_email: profile.email,
             from_name: formData.name,
