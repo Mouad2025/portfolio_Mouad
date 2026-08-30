@@ -63,6 +63,26 @@ export const Contact: React.FC<ContactProps> = ({ profile, theme = 'dark' }) => 
     setStatus('submitting');
 
     try {
+      // Get current time - Format: "August 30, 2026, 03:35:00 PM"
+      const now = new Date();
+      const timeString = now.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
+
+      console.log('Sending email with data:', {
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        time: timeString
+      });
+
       // Send email via EmailJS
       const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
         method: 'POST',
@@ -78,10 +98,14 @@ export const Contact: React.FC<ContactProps> = ({ profile, theme = 'dark' }) => 
             from_name: formData.name,
             from_email: formData.email,
             subject: formData.subject,
-            message: formData.message
+            message: formData.message,
+            name: formData.name,
+            time: timeString
           }
         })
       });
+
+      console.log('EmailJS response:', response.status);
 
       if (response.ok) {
         setTimeout(() => {
@@ -91,9 +115,18 @@ export const Contact: React.FC<ContactProps> = ({ profile, theme = 'dark' }) => 
             spread: 50,
             origin: { y: 0.8 }
           });
+          // Reset form
+          setFormData({
+            name: '',
+            email: '',
+            subject: subjectOptions[0] || '',
+            message: '',
+            timeline: 'Immediate',
+            budget: 'Standard'
+          });
         }, 500);
       } else {
-        throw new Error('Failed to send email');
+        throw new Error(`Failed to send email: ${response.status}`);
       }
     } catch (error) {
       console.error('Email sending failed:', error);
@@ -292,14 +325,6 @@ export const Contact: React.FC<ContactProps> = ({ profile, theme = 'dark' }) => 
                   <div className="pt-4">
                     <button
                       onClick={() => {
-                        setFormData({
-                          name: '',
-                          email: '',
-                          subject: subjectOptions[0] || '',
-                          message: '',
-                          timeline: 'Immediate',
-                          budget: 'Standard'
-                        });
                         setStatus('idle');
                       }}
                       className={`px-5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
