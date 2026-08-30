@@ -2,5 +2,7 @@
   "name": "Bouhadiba Mouâd - Portfolio",
   "description": "Personal portfolio of Bouhadiba Mouâd — AI & Computer Vision Researcher, Master 2 in AIDSS, Deep Learning & Predictive Maintenance Specialist.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
